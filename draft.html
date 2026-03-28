@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ljanlji — Design Draft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --linen:      #FAF3E8;
+      --paper:      #F0E4CE;
+      --terracotta: #C4622D;
+      --coral:      #E07A52;
+      --sage:       #5A9060;
+      --sage-light: #A8C9AC;
+      --mustard:    #E8B84B;
+      --dark:       #3A2010;
+      --mid:        #7A4A28;
+      --rose:       #C9706A;
+    }
+
+    body {
+      background: #EDE4D4;
+      font-family: 'Lora', serif;
+      color: var(--dark);
+      padding: 40px 20px;
+    }
+
+    h2.section-label {
+      font-family: 'Playfair Display', serif;
+      color: var(--terracotta);
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 64px 0 20px;
+    }
+
+    /* ─── COLOR SWATCHES ─── */
+    .swatches {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .swatch-dot {
+      width: 52px; height: 52px; border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .swatch-label {
+      font-family: 'Lora', serif; font-size: 9px;
+      color: var(--mid); letter-spacing: 0.06em;
+    }
+
+    /* ─── BUSINESS CARD ─── */
+    .card-wrapper {
+      display: flex; gap: 32px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 20px;
+    }
+
+    .card {
+      width: 340px; height: 192px;
+      border-radius: 10px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.22);
+    }
+
+    /* recycled paper base */
+    .card-front {
+      background-color: #D4A870;
+      background-image:
+        /* paper grain */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    }
+
+    .card-back {
+      background-color: #C49860;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    }
+
+    /* embroidery band top + bottom */
+    .card-band {
+      position: absolute; left: 0; right: 0; height: 14px;
+      display: flex; overflow: hidden;
+    }
+    .card-band.top { top: 0; }
+    .card-band.bot { bottom: 0; }
+
+    .card-band-inner {
+      display: flex; align-items: stretch; width: 100%;
+      background: var(--sage);
+    }
+
+    .card-band-inner::after {
+      content: '';
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 8px,
+        rgba(255,255,255,0.18) 8px, rgba(255,255,255,0.18) 9px,
+        transparent 9px, transparent 18px,
+        var(--terracotta) 18px, var(--terracotta) 22px,
+        transparent 22px, transparent 30px,
+        rgba(255,255,255,0.18) 30px, rgba(255,255,255,0.18) 31px
+      );
+    }
+
+    .card-inner {
+      position: absolute; inset: 14px;
+      display: flex; flex-direction: column;
+      justify-content: space-between; padding: 10px 18px 12px;
+    }
+
+    /* logo */
+    .card-logo-row {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .card-logo-img {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .card-store-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700;
+      color: #3A2010; line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .card-tagline {
+      font-family: 'Lora', serif; font-size: 8.5px;
+      color: #3A2010; opacity: 0.65;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 13px;
+      color: #3A2010; opacity: 0.8;
+    }
+
+    .card-contact {
+      display: flex; flex-direction: column; gap: 2px;
+      font-family: 'Lora', serif; font-size: 8px;
+      color: #3A2010; opacity: 0.7; letter-spacing: 0.05em;
+    }
+
+    /* card back */
+    .card-back-inner {
+      position: absolute; inset: 14px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+    }
+
+    .qr-box {
+      width: 84px; height: 84px;
+      background: var(--dark);
+      border-radius: 6px; padding: 7px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 1.5px;
+    }
+    .qr-box span { background: #F0E4CE; border-radius: 1px; }
+
+    .card-url {
+      font-family: 'Lora', serif; font-size: 7.5px;
+      color: #3A2010; opacity: 0.55; letter-spacing: 0.14em;
+    }
+
+    /* ─── WEBSITE MOCKUP ─── */
+    .site-frame {
+      max-width: 900px; margin: 0 auto;
+      background: var(--linen);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.2);
+    }
+
+    /* NAV */
+    .site-nav {
+      background: var(--linen);
+      border-bottom: 2px solid var(--sage-light);
+      padding: 0 48px; height: 60px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .nav-logo-img {
+      width: 36px; height: 36px;
+      border-radius: 50%; object-fit: cover;
+    }
+
+    .nav-logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--terracotta);
+      letter-spacing: 0.03em;
+    }
+
+    .nav-links {
+      display: flex; gap: 28px;
+      font-family: 'Lora', serif; font-size: 12px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--mid);
+    }
+
+    /* HERO */
+    .site-hero {
+      background: var(--paper);
+      padding: 60px 48px 52px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+
+    /* folk pattern top-right decorative blob */
+    .site-hero::after {
+      content: '';
+      position: absolute; right: -80px; top: -80px;
+      width: 360px; height: 360px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,184,75,0.2) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'Lora', serif; font-size: 10px;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--sage); font-weight: 600;
+      border-bottom: 2px solid var(--sage-light);
+      padding-bottom: 4px; margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px; font-weight: 700;
+      color: var(--dark); line-height: 1.18;
+      margin-bottom: 18px;
+    }
+
+    .hero-title em {
+      color: var(--terracotta); font-style: italic;
+    }
+
+    .hero-sub {
+      font-family: 'Lora', serif; font-size: 13.5px;
+      color: var(--mid); line-height: 1.75;
+      margin-bottom: 30px; max-width: 340px;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      background: var(--terracotta); color: #fff;
+      font-family: 'Lora', serif; font-size: 11px;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 13px 30px; border-radius: 3px; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(196,98,45,0.35);
+    }
+
+    .hero-art {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .hero-art svg { width: 270px; height: 270px; }
+
+    /* FOLK BAND DIVIDER */
+    .folk-band {
+      height: 20px; overflow: hidden;
+      background: var(--sage);
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 10px,
+        rgba(255,255,255,0.22) 10px, rgba(255,255,255,0.22) 11px,
+        transparent 11px, transparent 22px,
+        var(--terracotta) 22px, var(--terracotta) 27px,
+        transparent 27px, transparent 38px,
+        var(--mustard) 38px, var(--mustard) 42px,
+        transparent 42px, transparent 53px,
+        var(--terracotta) 53px, var(--terracotta) 58px
+      );
+    }
+
+    /* PRODUCTS */
+    .site-section {
+      padding: 52px 48px;
+      background: var(--linen);
+    }
+
+    .section-eyebrow {
+      font-family: 'Lora', serif; font-size: 10px;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--sage); font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px; color: var(--dark); margin-bottom: 28px;
+    }
+
+    .product-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 6px; overflow: hidden;
+      border: 1px solid rgba(90,144,96,0.18);
+      box-shadow: 0 3px 14px rgba(58,32,16,0.07);
+      transition: box-shadow 0.2s;
+    }
+
+    .product-img {
+      width: 100%; height: 150px;
+      object-fit: cover; display: block;
+      background: var(--paper);
+    }
+
+    .product-info { padding: 14px 16px 16px; }
+
+    .product-tag {
+      display: inline-block;
+      font-family: 'Lora', serif; font-size: 8px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--sage); font-weight: 600;
+      border: 1px solid var(--sage-light);
+      border-radius: 2px; padding: 2px 7px;
+      margin-bottom: 7px;
+    }
+
+    .product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px; color: var(--dark); margin-bottom: 5px;
+    }
+
+    .product-desc {
+      font-family: 'Lora', serif; font-size: 11px;
+      color: var(--mid); line-height: 1.65;
+    }
+
+    /* ABOUT BAND */
+    .site-about {
+      background: linear-gradient(135deg, #3A5C3E 0%, #5A9060 100%);
+      padding: 52px 48px;
+      display: grid; grid-template-columns: auto 1fr;
+      gap: 40px; align-items: center;
+    }
+
+    .about-photo {
+      width: 140px; height: 140px;
+      border-radius: 6px; object-fit: cover;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      /* placeholder until real photo */
+    }
+
+    .about-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; color: #fff; margin-bottom: 12px;
+    }
+
+    .about-body {
+      font-family: 'Lora', serif; font-size: 13px;
+      color: #fff; opacity: 0.88; line-height: 1.82;
+    }
+
+    /* CONTACT STRIP */
+    .site-contact-strip {
+      background: var(--paper);
+      padding: 32px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .contact-strip-left {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; color: var(--dark);
+    }
+
+    .contact-strip-left span {
+      color: var(--terracotta); font-style: italic;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      border: 2px solid var(--terracotta); color: var(--terracotta);
+      font-family: 'Lora', serif; font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 11px 26px; border-radius: 3px; font-weight: 600;
+    }
+
+    /* FOOTER */
+    .site-footer {
+      background: var(--dark);
+      padding: 24px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .footer-logo-img {
+      width: 28px; height: 28px;
+      border-radius: 50%; object-fit: cover; opacity: 0.85;
+    }
+
+    .footer-logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; color: var(--mustard);
+    }
+
+    .footer-contact {
+      font-family: 'Lora', serif; font-size: 10px;
+      color: #fff; opacity: 0.45; letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PALETTE -->
+  <h2 class="section-label">Color Palette — Cheerful Harvest</h2>
+  <div class="swatches">
+    <div class="swatch"><div class="swatch-dot" style="background:#FAF3E8"></div><div class="swatch-label">Linen</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#D4A870"></div><div class="swatch-label">Brown Paper</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#C4622D"></div><div class="swatch-label">Terracotta</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#E8B84B"></div><div class="swatch-label">Sunflower</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#5A9060"></div><div class="swatch-label">Sage</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#C9706A"></div><div class="swatch-label">Rose</div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#3A2010"></div><div class="swatch-label">Dark Earth</div></div>
+  </div>
+
+  <!-- BUSINESS CARD -->
+  <h2 class="section-label">Business Card — Front &amp; Back (printed on recycled paper)</h2>
+  <div class="card-wrapper">
+
+    <!-- FRONT -->
+    <div class="card card-front">
+      <div class="card-band top"><div class="card-band-inner"></div></div>
+      <div class="card-band bot"><div class="card-band-inner"></div></div>
+      <div class="card-inner">
+        <div class="card-logo-row">
+          <img class="card-logo-img" src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E" alt="Ljanlji logo" onerror="this.style.background='#fff';this.alt='Logo'">
+          <div>
+            <div class="card-store-name">Ljanlji</div>
+            <div class="card-tagline">Ručni rad · Balkanski ukras</div>
+          </div>
+        </div>
+        <div class="card-name">Ime Prezime</div>
+        <div class="card-contact">
+          <span>+381 00 000 0000</span>
+          <span>ime@ljanlji.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="card card-back">
+      <div class="card-band top"><div class="card-band-inner"></div></div>
+      <div class="card-band bot"><div class="card-band-inner"></div></div>
+      <div class="card-back-inner">
+        <div class="qr-box">
+          <span></span><span style="background:transparent"></span><span></span><span></span><span></span><span style="background:transparent"></span><span></span>
+          <span></span><span></span><span style="background:transparent"></span><span style="background:transparent"></span><span style="background:transparent"></span><span></span><span></span>
+          <span></span><span style="background:transparent"></span><span></span><span style="background:transparent"></span><span></span><span style="background:transparent"></span><span></span>
+          <span></span><span style="background:transparent"></span><span style="background:transparent"></span><span></span><span style="background:transparent"></span><span></span><span></span>
+          <span></span><span style="background:transparent"></span><span></span><span style="background:transparent"></span><span></span><span style="background:transparent"></span><span></span>
+          <span></span><span></span><span style="background:transparent"></span><span style="background:transparent"></span><span style="background:transparent"></span><span></span><span></span>
+          <span></span><span style="background:transparent"></span><span></span><span></span><span></span><span style="background:transparent"></span><span></span>
+        </div>
+        <div class="card-url">www.ljanlji.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEBSITE MOCKUP -->
+  <h2 class="section-label">Website — Home Page</h2>
+  <div class="site-frame">
+
+    <!-- NAV -->
+    <nav class="site-nav">
+      <div class="nav-logo">
+        <img class="nav-logo-img" src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E" alt="Ljanlji">
+        <div class="nav-logo-name">Ljanlji</div>
+      </div>
+      <div class="nav-links">
+        <span>Početna</span>
+        <span>Blog</span>
+        <span>O nama</span>
+        <span>Kontakt</span>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="site-hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow">Ručni rad iz srca Balkana</div>
+        <div class="hero-title">
+          Ukras koji<br><em>priča priču</em>
+        </div>
+        <div class="hero-sub">
+          Sušeno cvijeće, uskršnje korpe i sezonski dekor — sve izrađeno ručno, s ljubavlju, po starim balkanskim uzorima.
+        </div>
+        <div class="hero-cta">Pogledaj radove →</div>
+      </div>
+      <div class="hero-art">
+        <!-- Naive-art folk flower basket SVG (cheerful, bright) -->
+        <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- basket -->
+          <ellipse cx="110" cy="158" rx="58" ry="18" fill="#8B5A2B" opacity="0.85"/>
+          <path d="M52 142 Q52 178 110 180 Q168 178 168 142 L160 128 Q144 118 110 118 Q76 118 60 128 Z" fill="#B07040"/>
+          <path d="M60 128 Q110 138 160 128" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
+          <path d="M54 142 Q110 155 166 142" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
+          <path d="M56 156 Q110 168 164 156" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
+
+          <!-- stems -->
+          <line x1="110" y1="118" x2="110" y2="78" stroke="#5A9060" stroke-width="2.5"/>
+          <line x1="110" y1="108" x2="80"  y2="72" stroke="#5A9060" stroke-width="2"/>
+          <line x1="110" y1="108" x2="140" y2="72" stroke="#5A9060" stroke-width="2"/>
+          <line x1="110" y1="100" x2="62"  y2="84" stroke="#5A9060" stroke-width="1.8"/>
+          <line x1="110" y1="100" x2="158" y2="84" stroke="#5A9060" stroke-width="1.8"/>
+          <line x1="110" y1="95"  x2="92"  y2="62" stroke="#5A9060" stroke-width="1.5"/>
+          <line x1="110" y1="95"  x2="128" y2="62" stroke="#5A9060" stroke-width="1.5"/>
+
+          <!-- leaves -->
+          <ellipse cx="96"  cy="84" rx="9" ry="4" fill="#5A9060" transform="rotate(-35 96 84)"  opacity="0.9"/>
+          <ellipse cx="124" cy="84" rx="9" ry="4" fill="#5A9060" transform="rotate(35 124 84)"  opacity="0.9"/>
+          <ellipse cx="72"  cy="96" rx="8" ry="3" fill="#5A9060" transform="rotate(-50 72 96)"  opacity="0.8"/>
+          <ellipse cx="148" cy="96" rx="8" ry="3" fill="#5A9060" transform="rotate(50 148 96)"  opacity="0.8"/>
+
+          <!-- center flower — terracotta + mustard -->
+          <circle cx="110" cy="70" r="10" fill="#C4622D"/>
+          <circle cx="110" cy="57" r="7"  fill="#E8B84B"/>
+          <circle cx="121" cy="62" r="7"  fill="#E8B84B"/>
+          <circle cx="121" cy="75" r="7"  fill="#E8B84B"/>
+          <circle cx="110" cy="82" r="7"  fill="#E8B84B"/>
+          <circle cx="99"  cy="75" r="7"  fill="#E8B84B"/>
+          <circle cx="99"  cy="62" r="7"  fill="#E8B84B"/>
+          <circle cx="110" cy="70" r="8"  fill="#C4622D"/>
+          <circle cx="110" cy="70" r="4"  fill="#E8B84B"/>
+
+          <!-- left flower — rose/coral -->
+          <circle cx="80"  cy="62" r="8"  fill="#C9706A"/>
+          <circle cx="80"  cy="51" r="5"  fill="#FAF3E8"/>
+          <circle cx="90"  cy="56" r="5"  fill="#FAF3E8"/>
+          <circle cx="90"  cy="67" r="5"  fill="#FAF3E8"/>
+          <circle cx="80"  cy="72" r="5"  fill="#FAF3E8"/>
+          <circle cx="70"  cy="67" r="5"  fill="#FAF3E8"/>
+          <circle cx="70"  cy="56" r="5"  fill="#FAF3E8"/>
+          <circle cx="80"  cy="62" r="5.5" fill="#C9706A"/>
+          <circle cx="80"  cy="62" r="2.5" fill="#FAF3E8"/>
+
+          <!-- right flower — sage/green -->
+          <circle cx="140" cy="62" r="8"  fill="#5A9060"/>
+          <circle cx="140" cy="51" r="5"  fill="#E8B84B"/>
+          <circle cx="150" cy="56" r="5"  fill="#E8B84B"/>
+          <circle cx="150" cy="67" r="5"  fill="#E8B84B"/>
+          <circle cx="140" cy="72" r="5"  fill="#E8B84B"/>
+          <circle cx="130" cy="67" r="5"  fill="#E8B84B"/>
+          <circle cx="130" cy="56" r="5"  fill="#E8B84B"/>
+          <circle cx="140" cy="62" r="5.5" fill="#5A9060"/>
+          <circle cx="140" cy="62" r="2.5" fill="#FAF3E8"/>
+
+          <!-- small accent flowers -->
+          <circle cx="65"  cy="80" r="6"  fill="#E8B84B"/>
+          <circle cx="65"  cy="73" r="3.5" fill="#FAF3E8"/>
+          <circle cx="71"  cy="76" r="3.5" fill="#FAF3E8"/>
+          <circle cx="71"  cy="84" r="3.5" fill="#FAF3E8"/>
+          <circle cx="65"  cy="87" r="3.5" fill="#FAF3E8"/>
+          <circle cx="59"  cy="84" r="3.5" fill="#FAF3E8"/>
+          <circle cx="59"  cy="76" r="3.5" fill="#FAF3E8"/>
+          <circle cx="65"  cy="80" r="3"  fill="#E8B84B"/>
+
+          <circle cx="155" cy="80" r="6"  fill="#C4622D"/>
+          <circle cx="155" cy="73" r="3.5" fill="#FAF3E8"/>
+          <circle cx="161" cy="76" r="3.5" fill="#FAF3E8"/>
+          <circle cx="161" cy="84" r="3.5" fill="#FAF3E8"/>
+          <circle cx="155" cy="87" r="3.5" fill="#FAF3E8"/>
+          <circle cx="149" cy="84" r="3.5" fill="#FAF3E8"/>
+          <circle cx="149" cy="76" r="3.5" fill="#FAF3E8"/>
+          <circle cx="155" cy="80" r="3"  fill="#C4622D"/>
+
+          <!-- tiny dots scattered -->
+          <circle cx="92"  cy="50" r="2.5" fill="#E8B84B"/>
+          <circle cx="128" cy="50" r="2.5" fill="#C9706A"/>
+          <circle cx="110" cy="44" r="3"   fill="#5A9060"/>
+          <circle cx="76"  cy="46" r="2"   fill="#C4622D"/>
+          <circle cx="144" cy="46" r="2"   fill="#C4622D"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- FOLK BAND -->
+    <div class="folk-band"></div>
+
+    <!-- PRODUCTS -->
+    <div class="site-section">
+      <div class="section-eyebrow">Iz atelje</div>
+      <div class="section-title">Novi radovi</div>
+      <div class="product-grid">
+
+        <div class="product-card">
+          <img class="product-img"
+            src="https://picsum.photos/seed/driedflowers/400/300"
+            alt="Sušeni aranžman">
+          <div class="product-info">
+            <div class="product-tag">Sušeno cvijeće</div>
+            <div class="product-name">Aranžman — pšenica i lavanda</div>
+            <div class="product-desc">Ručno rađen buket od sušene pšenice i lavande. Idealno za dom ili poklon.</div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img class="product-img"
+            src="https://picsum.photos/seed/easterbasket/400/300"
+            alt="Uskršnja korpa">
+          <div class="product-info">
+            <div class="product-tag">Uskrs</div>
+            <div class="product-name">Uskršnja korpa</div>
+            <div class="product-desc">Pletena korpa sa ručno oslikanim jajima i suvim cvijećem.</div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img class="product-img"
+            src="https://picsum.photos/seed/springbouquet/400/300"
+            alt="8. mart buket">
+          <div class="product-info">
+            <div class="product-tag">8. mart</div>
+            <div class="product-name">Proljetni buket</div>
+            <div class="product-desc">Posebna kombinacija proljetnog sušenog cvijeća u tematskim bojama praznika.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOLK BAND -->
+    <div class="folk-band"></div>
+
+    <!-- ABOUT -->
+    <div class="site-about">
+      <div class="about-photo">🧑‍🌾</div>
+      <div>
+        <div class="about-title">Priča o Ljanjlima</div>
+        <div class="about-body">
+          Svaki komad nastaje u tišini, rukom i srcem. Inspiracija dolazi iz seoskog života Balkana — sa polja, iz bašte, iz tradicije koja se prenosi s koljena na koljeno. Koristimo isključivo prirodne materijale skupljane kroz godišnja doba.
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT STRIP -->
+    <div class="site-contact-strip">
+      <div class="contact-strip-left">Zainteresovani? <span>Pišite nam.</span></div>
+      <div class="contact-btn">Kontaktirajte nas</div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="site-footer">
+      <div class="footer-logo">
+        <img class="footer-logo-img" src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E" alt="Ljanlji">
+        <div class="footer-logo-name">Ljanlji</div>
+      </div>
+      <div class="footer-contact">ime@ljanlji.com &nbsp;·&nbsp; +381 00 000 0000 &nbsp;·&nbsp; www.ljanlji.com</div>
+    </div>
+
+  </div>
+
+  <div style="height: 60px"></div>
+</body>
+</html>

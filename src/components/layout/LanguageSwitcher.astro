@@ -1,0 +1,56 @@
+---
+import { locales, localeNames, type Locale } from '@/i18n/ui'
+
+interface Props {
+  currentLocale: Locale
+  currentPath: string // e.g. /bs/products/my-product
+}
+
+const { currentLocale, currentPath } = Astro.props
+
+function switchLocale(path: string, from: Locale, to: Locale): string {
+  // path starts with /from/... → replace with /to/...
+  const withoutLocale = path.replace(new RegExp(`^/${from}`), '')
+  return `/${to}${withoutLocale || '/'}`
+}
+---
+
+<div class="lang-switcher">
+  {locales.map((locale) => (
+    <a
+      href={switchLocale(currentPath, currentLocale, locale)}
+      class={`lang-option ${locale === currentLocale ? 'active' : ''}`}
+      aria-current={locale === currentLocale ? 'true' : undefined}
+    >
+      {localeNames[locale]}
+    </a>
+  ))}
+</div>
+
+<style>
+  .lang-switcher {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .lang-option {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    padding: 4px 8px;
+    border-radius: 2px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .lang-option:hover {
+    color: var(--terracotta);
+  }
+
+  .lang-option.active {
+    color: var(--terracotta);
+    font-weight: 600;
+  }
+</style>

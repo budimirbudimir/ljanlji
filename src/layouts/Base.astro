@@ -1,0 +1,49 @@
+---
+import Header from '@/components/layout/Header.astro'
+import Footer from '@/components/layout/Footer.astro'
+import { type Locale } from '@/i18n/ui'
+import '@/styles/global.css'
+
+interface Props {
+  locale: Locale
+  title: string
+  description?: string
+  ogImage?: string
+}
+
+const {
+  locale,
+  title,
+  description = 'Ljanlji — ručni rad iz srca Balkana. Sušeno cvijeće, uskršnje korpe i sezonski dekor.',
+  ogImage = '/og-image.jpg',
+} = Astro.props
+
+const langMap: Record<Locale, string> = {
+  bs: 'bs',
+  sr: 'sr-Cyrl',
+  de: 'de',
+  en: 'en',
+}
+---
+
+<!doctype html>
+<html lang={langMap[locale]} dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — Ljanlji</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={`${title} — Ljanlji`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <Header locale={locale} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

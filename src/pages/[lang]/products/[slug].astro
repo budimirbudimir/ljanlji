@@ -1,0 +1,134 @@
+---
+export const prerender = true
+import Base from '@/layouts/Base.astro'
+import ProductGallery from '@/components/ui/ProductGallery'
+import { t, locales, type Locale } from '@/i18n/ui'
+import { pick } from '@/lib/content'
+import { createReader } from '@keystatic/core/reader'
+import { DocumentRenderer } from '@keystatic/core/renderer'
+import keystaticConfig from '../../../../keystatic.config'
+
+export async function getStaticPaths() {
+  const reader = createReader(process.cwd(), keystaticConfig)
+  const products = await reader.collections.products.all()
+
+  return locales.flatMap((lang) =>
+    products
+      .filter((p) => p.entry.status === 'published')
+      .map((p) => ({ params: { lang, slug: p.slug } }))
+  )
+}
+
+const { lang, slug } = Astro.params as { lang: Locale; slug: string }
+
+const reader = createReader(process.cwd(), keystaticConfig)
+const product = await reader.collections.products.read(slug)
+
+if (!product) {
+  return Astro.redirect(`/${lang}/products`, 302)
+}
+
+const title = pick(product.title as any, lang)
+const descriptionFn = pick(product.description as any, lang)
+const descriptionDoc = typeof descriptionFn === 'function' ? await descriptionFn() : descriptionFn as any[]
+const fileImages = (product.images ?? []).filter(
+  (src): src is string => typeof src === 'string' && src !== null
+)
+const urlImages = (product.imageUrls ?? []).filter(Boolean) as string[]
+const images = [...fileImages, ...urlImages].map((src, i) => ({
+  src,
+  alt: `${title} — ${i + 1}`,
+}))
+const categoryLabel = t(lang, `cat.${product.category}` as any)
+---
+
+<Base locale={lang} title={String(title)} ogImage={images[0]?.src ?? undefined}>
+  <div class="breadcrumb-bar">
+    <div class="section" style="padding-top:0;padding-bottom:0">
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href={`/${lang}/products`}>{t(lang, 'nav.products')}</a>
+        <span aria-hidden="true">›</span>
+        <span>{title}</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="section product-page">
+    <div class="product-gallery-col">
+      <ProductGallery
+        client:load
+        images={images}
+        photosLabel={t(lang, 'products.photos')}
+      />
+    </div>
+
+    <div class="product-detail-col">
+      <span class="tag">{categoryLabel}</span>
+      <h1 class="product-title">{title}</h1>
+
+      {descriptionDoc && descriptionDoc.length > 0 && (
+        <div class="product-description">
+          <DocumentRenderer document={descriptionDoc} />
+        </div>
+      )}
+
+      <div class="product-cta">
+        <a href={`/${lang}/contact`} class="btn-primary">{t(lang, 'contact.cta')}</a>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .breadcrumb-bar {
+    background: var(--paper);
+    border-bottom: 1px solid rgba(90,144,96,0.18);
+    padding: 12px 0;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .breadcrumb a { color: var(--sage); }
+  .breadcrumb a:hover { color: var(--terracotta); }
+
+  .product-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    padding-top: 48px;
+    padding-bottom: 72px;
+  }
+
+  .product-title {
+    font-size: clamp(24px, 3.5vw, 36px);
+    color: var(--dark);
+    margin: 12px 0 20px;
+    line-height: 1.2;
+  }
+
+  .product-description {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--mid);
+    margin-bottom: 32px;
+  }
+
+  .product-description :global(p) { margin-bottom: 12px; }
+  .product-description :global(ul) { padding-left: 20px; margin-bottom: 12px; }
+  .product-description :global(strong) { color: var(--dark); }
+
+  .product-cta { margin-top: 8px; }
+
+  @media (max-width: 768px) {
+    .product-page { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>

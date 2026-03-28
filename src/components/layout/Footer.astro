@@ -1,0 +1,161 @@
+---
+import { t, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const FACEBOOK_URL = 'https://www.facebook.com/permakulturabih/'
+const INSTAGRAM_URL = 'https://www.instagram.com/ljanlji.rukotvorine'
+---
+
+<div class="folk-band"></div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img
+        src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E"
+        alt="Ljanlji"
+        class="footer-logo-img"
+        width="32"
+        height="32"
+      />
+      <div>
+        <div class="footer-logo-name">Ljanlji</div>
+        <div class="footer-tagline">{t(locale, 'footer.tagline')}</div>
+      </div>
+    </div>
+
+    <div class="footer-social">
+      <span class="footer-social-label">{t(locale, 'footer.followUs')}</span>
+      <div class="social-links">
+        <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook">
+          <!-- Facebook icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+          </svg>
+        </a>
+        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+          <!-- Instagram icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-copy">
+      {t(locale, 'footer.copyright')}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--dark);
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer-logo-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    opacity: 0.85;
+  }
+
+  .footer-logo-name {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--mustard);
+    line-height: 1.2;
+  }
+
+  .footer-tagline {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: #fff;
+    opacity: 0.45;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  .footer-social {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-social-label {
+    font-family: var(--font-body);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fff;
+    opacity: 0.4;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    opacity: 0.65;
+    transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .social-link:hover {
+    opacity: 1;
+    border-color: var(--mustard);
+    color: var(--mustard);
+  }
+
+  .footer-copy {
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: #fff;
+    opacity: 0.35;
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      padding: 24px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .footer-copy { order: 3; }
+  }
+</style>

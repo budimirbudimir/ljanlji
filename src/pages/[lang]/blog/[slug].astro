@@ -1,0 +1,160 @@
+---
+export const prerender = true
+import Base from '@/layouts/Base.astro'
+import { t, locales, type Locale } from '@/i18n/ui'
+import { pick } from '@/lib/content'
+import { createReader } from '@keystatic/core/reader'
+import { DocumentRenderer } from '@keystatic/core/renderer'
+import keystaticConfig from '../../../../keystatic.config'
+
+export async function getStaticPaths() {
+  const reader = createReader(process.cwd(), keystaticConfig)
+  const posts = await reader.collections.blogPosts.all()
+
+  return locales.flatMap((lang) =>
+    posts
+      .filter((p) => p.entry.status === 'published')
+      .map((p) => ({ params: { lang, slug: p.slug } }))
+  )
+}
+
+const { lang, slug } = Astro.params as { lang: Locale; slug: string }
+
+const reader = createReader(process.cwd(), keystaticConfig)
+const post = await reader.collections.blogPosts.read(slug)
+
+if (!post) {
+  return Astro.redirect(`/${lang}/blog`, 302)
+}
+
+const title = String(pick(post.title as any, lang))
+const bodyFn = pick(post.body as any, lang)
+const bodyDoc = typeof bodyFn === 'function' ? await bodyFn() : bodyFn as any[]
+---
+
+<Base locale={lang} title={title} ogImage={post.coverImage ?? undefined}>
+  <div class="breadcrumb-bar">
+    <div class="section" style="padding-top:0;padding-bottom:0">
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href={`/${lang}/blog`}>{t(lang, 'nav.blog')}</a>
+        <span aria-hidden="true">›</span>
+        <span>{title}</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="section post">
+    {post.coverImage && (
+      <div class="post-cover">
+        <img src={post.coverImage} alt={title} class="post-cover-img" />
+      </div>
+    )}
+
+    <header class="post-header">
+      {post.publishedDate && (
+        <time class="post-date" datetime={post.publishedDate}>
+          {t(lang, 'blog.published')}: {new Date(post.publishedDate).toLocaleDateString(
+            lang === 'sr' ? 'sr-Cyrl' : lang === 'de' ? 'de-DE' : lang === 'en' ? 'en-GB' : 'bs',
+            { day: 'numeric', month: 'long', year: 'numeric' }
+          )}
+        </time>
+      )}
+      <h1 class="post-title">{title}</h1>
+    </header>
+
+    {bodyDoc && bodyDoc.length > 0 && (
+      <div class="post-body">
+        <DocumentRenderer document={bodyDoc} />
+      </div>
+    )}
+
+    <div class="post-back">
+      <a href={`/${lang}/blog`} class="btn-outline">← {t(lang, 'nav.blog')}</a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .breadcrumb-bar {
+    background: var(--paper);
+    border-bottom: 1px solid rgba(90,144,96,0.18);
+    padding: 12px 0;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .breadcrumb a { color: var(--sage); }
+  .breadcrumb a:hover { color: var(--terracotta); }
+
+  .post { max-width: 720px; padding-top: 48px; padding-bottom: 80px; }
+
+  .post-cover {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 36px;
+    aspect-ratio: 16/9;
+  }
+
+  .post-cover-img { width: 100%; height: 100%; object-fit: cover; }
+
+  .post-date {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .post-title {
+    font-size: clamp(26px, 4vw, 40px);
+    color: var(--dark);
+    line-height: 1.2;
+    margin-bottom: 36px;
+  }
+
+  .post-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--dark);
+  }
+
+  .post-body :global(p) { margin-bottom: 18px; }
+  .post-body :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: var(--dark);
+    margin: 36px 0 14px;
+  }
+  .post-body :global(h3) {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--mid);
+    margin: 28px 0 10px;
+  }
+  .post-body :global(ul),
+  .post-body :global(ol) { padding-left: 24px; margin-bottom: 18px; }
+  .post-body :global(li) { margin-bottom: 6px; }
+  .post-body :global(strong) { color: var(--dark); font-weight: 600; }
+  .post-body :global(em) { color: var(--terracotta); }
+  .post-body :global(a) { color: var(--sage); text-decoration: underline; }
+  .post-body :global(img) { border-radius: var(--radius-md); margin: 24px 0; }
+  .post-body :global(blockquote) {
+    border-left: 3px solid var(--sage-light);
+    padding-left: 20px;
+    color: var(--mid);
+    font-style: italic;
+    margin: 24px 0;
+  }
+
+  .post-back { margin-top: 48px; }
+</style>

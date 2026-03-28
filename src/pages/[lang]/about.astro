@@ -1,0 +1,237 @@
+---
+export const prerender = true
+import Base from '@/layouts/Base.astro'
+import { t, locales, type Locale } from '@/i18n/ui'
+import { pick } from '@/lib/content'
+import { createReader } from '@keystatic/core/reader'
+import { DocumentRenderer } from '@keystatic/core/renderer'
+import keystaticConfig from '../../../keystatic.config'
+
+export async function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }))
+}
+
+const { lang } = Astro.params as { lang: Locale }
+
+const reader = createReader(process.cwd(), keystaticConfig)
+const about = await reader.singletons.aboutPage.read()
+
+const title = about ? pick(about.title as any, lang) : t(lang, 'about.title')
+const bodyDoc = about ? pick(about.body as any, lang) as any[] : []
+---
+
+<Base locale={lang} title={t(lang, 'about.title')}>
+  <section class="about-hero">
+    <div class="section">
+      <h1 class="page-title">{t(lang, 'about.title')}</h1>
+    </div>
+  </section>
+
+  <div class="folk-band"></div>
+
+  <section class="section about-body-section">
+    <div class="about-grid">
+      <div class="about-photo-col">
+        {about?.photo ? (
+          <img src={about.photo} alt="Ljanlji" class="about-photo" />
+        ) : (
+          <div class="about-photo-placeholder">
+            <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+              <circle cx="60" cy="44" r="24" fill="var(--sage-light)" opacity="0.6"/>
+              <ellipse cx="60" cy="96" rx="40" ry="20" fill="var(--sage-light)" opacity="0.4"/>
+            </svg>
+          </div>
+        )}
+      </div>
+
+      <div class="about-text-col">
+        <h2 class="about-subtitle">{title}</h2>
+        {bodyDoc && bodyDoc.length > 0 ? (
+          <div class="about-prose">
+            <DocumentRenderer document={bodyDoc} />
+          </div>
+        ) : (
+          <div class="about-prose">
+            {lang === 'bs' && (
+              <>
+                <p>Svaki komad nastaje u tišini, rukom i srcem. Inspiracija dolazi iz seoskog života Balkana — sa polja, iz bašte, iz tradicije koja se prenosi s koljena na koljeno.</p>
+                <p>Koristim isključivo prirodne materijale skupljane kroz godišnja doba: sušeno cvijeće, trave, grančice i pletene materijale koje prave lokalni majstori.</p>
+                <p>Svaki aranžman je jedinstven. Nema dvoje jednakih.</p>
+              </>
+            )}
+            {lang === 'sr' && (
+              <>
+                <p>Сваки комад настаје у тишини, руком и срцем. Инспирација долази из сеоског живота Балкана — са поља, из баште, из традиције која се преноси с кољена на кољено.</p>
+                <p>Користим искључиво природне материјале скупљане кроз годишња доба: сушено цвијеће, траве, гранчице и плетене материјале које праве локални мајстори.</p>
+                <p>Сваки аранжман је јединствен. Нема двоје једнаких.</p>
+              </>
+            )}
+            {lang === 'de' && (
+              <>
+                <p>Jedes Stück entsteht in der Stille, mit Hand und Herz. Die Inspiration kommt aus dem Landleben des Balkans — von den Feldern, aus dem Garten, aus einer Tradition, die von Generation zu Generation weitergegeben wird.</p>
+                <p>Ich verwende ausschließlich natürliche Materialien, die durch die Jahreszeiten gesammelt werden: Trockenblumen, Gräser, Zweige und geflochtene Materialien lokaler Handwerker.</p>
+                <p>Jedes Arrangement ist einzigartig. Keine zwei sind gleich.</p>
+              </>
+            )}
+            {lang === 'en' && (
+              <>
+                <p>Every piece is made in silence, by hand and with heart. The inspiration comes from rural Balkan life — from the fields, from the garden, from a tradition passed down through generations.</p>
+                <p>I use exclusively natural materials gathered through the seasons: dried flowers, grasses, twigs, and woven materials made by local craftspeople.</p>
+                <p>Every arrangement is unique. No two are alike.</p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <div class="folk-band"></div>
+
+  <section class="values-section">
+    <div class="section">
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🌿</div>
+          <h3 class="value-title">
+            {lang === 'bs' && 'Prirodni materijali'}
+            {lang === 'sr' && 'Природни материјали'}
+            {lang === 'de' && 'Natürliche Materialien'}
+            {lang === 'en' && 'Natural materials'}
+          </h3>
+          <p class="value-text">
+            {lang === 'bs' && 'Samo ono što zemlja da. Bez plastike, bez sintetike.'}
+            {lang === 'sr' && 'Само оно што земља да. Без пластике, без синтетике.'}
+            {lang === 'de' && 'Nur was die Erde gibt. Kein Plastik, keine Synthetik.'}
+            {lang === 'en' && 'Only what the earth provides. No plastic, no synthetics.'}
+          </p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🤲</div>
+          <h3 class="value-title">
+            {lang === 'bs' && 'Ručni rad'}
+            {lang === 'sr' && 'Ручни рад'}
+            {lang === 'de' && 'Handarbeit'}
+            {lang === 'en' && 'Handmade'}
+          </h3>
+          <p class="value-text">
+            {lang === 'bs' && 'Svaki komad je jedinstven — rađen rukom, s pažnjom i ljubavlju.'}
+            {lang === 'sr' && 'Сваки комад је јединствен — рађен руком, с пажњом и љубављу.'}
+            {lang === 'de' && 'Jedes Stück ist einzigartig — handgemacht mit Sorgfalt und Liebe.'}
+            {lang === 'en' && 'Every piece is unique — made by hand, with care and love.'}
+          </p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🌾</div>
+          <h3 class="value-title">
+            {lang === 'bs' && 'Balkanska tradicija'}
+            {lang === 'sr' && 'Балканска традиција'}
+            {lang === 'de' && 'Balkan-Tradition'}
+            {lang === 'en' && 'Balkan tradition'}
+          </h3>
+          <p class="value-text">
+            {lang === 'bs' && 'Uzori iz seoskog života — motivi koje su nosile naše bake.'}
+            {lang === 'sr' && 'Узори из сеоског живота — мотиви које су носиле наше баке.'}
+            {lang === 'de' && 'Vorbilder aus dem Landleben — Motive, die unsere Großmütter trugen.'}
+            {lang === 'en' && 'Patterns from rural life — motifs carried by our grandmothers.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about-hero {
+    background: var(--paper);
+    padding: 16px 0;
+  }
+
+  .page-title {
+    font-size: clamp(28px, 4vw, 48px);
+    color: var(--dark);
+    margin-top: 8px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .about-photo {
+    width: 100%;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    aspect-ratio: 3/4;
+  }
+
+  .about-photo-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--paper);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--sage-light);
+  }
+
+  .about-photo-placeholder svg { width: 80px; height: 80px; }
+
+  .about-subtitle {
+    font-size: 28px;
+    color: var(--dark);
+    margin-bottom: 20px;
+  }
+
+  .about-prose {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--mid);
+  }
+
+  .about-prose :global(p) { margin-bottom: 16px; }
+
+  .values-section { background: var(--paper); }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding: 8px 0;
+  }
+
+  .value-card {
+    text-align: center;
+    padding: 28px 20px;
+    background: #fff;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(90,144,96,0.15);
+    box-shadow: var(--shadow-card);
+  }
+
+  .value-icon { font-size: 32px; margin-bottom: 14px; }
+
+  .value-title {
+    font-size: 17px;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+
+  .value-text {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .about-photo-placeholder,
+    .about-photo { aspect-ratio: 4/3; max-width: 340px; }
+    .values-grid { grid-template-columns: 1fr; }
+  }
+</style>

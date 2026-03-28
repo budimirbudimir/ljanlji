@@ -1,0 +1,55 @@
+---
+export const prerender = true
+import Base from '@/layouts/Base.astro'
+import ProductFilter from '@/components/ui/ProductFilter'
+import { t, locales, type Locale } from '@/i18n/ui'
+import { pick } from '@/lib/content'
+import { createReader } from '@keystatic/core/reader'
+import keystaticConfig from '../../../../keystatic.config'
+
+export async function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }))
+}
+
+const { lang } = Astro.params as { lang: Locale }
+
+const reader = createReader(process.cwd(), keystaticConfig)
+const allProducts = await reader.collections.products.all()
+const published = allProducts.filter((p) => p.entry.status === 'published')
+
+const products = published.map((p) => ({
+  slug: p.slug,
+  title: String(pick(p.entry.title as any, lang)),
+  category: p.entry.category,
+  categoryLabel: t(lang, `cat.${p.entry.category}` as any),
+  coverImage: p.entry.images?.[0] ?? p.entry.imageUrls?.[0] ?? null,
+  href: `/${lang}/products/${p.slug}`,
+  viewLabel: t(lang, 'products.viewProduct'),
+}))
+
+const categories = ['dried-flowers', 'easter', 'march-8', 'christmas', 'other']
+  .filter((cat) => published.some((p) => p.entry.category === cat))
+  .map((cat) => ({ value: cat, label: t(lang, `cat.${cat}` as any) }))
+---
+
+<Base locale={lang} title={t(lang, 'products.title')}>
+  <section class="section">
+    <h1 class="page-title">{t(lang, 'products.title')}</h1>
+
+    <ProductFilter
+      client:load
+      products={products}
+      categories={categories}
+      filterAllLabel={t(lang, 'products.filterAll')}
+      emptyLabel={t(lang, 'products.empty')}
+    />
+  </section>
+</Base>
+
+<style>
+  .page-title {
+    font-size: clamp(28px, 4vw, 40px);
+    color: var(--dark);
+    margin-bottom: 36px;
+  }
+</style>

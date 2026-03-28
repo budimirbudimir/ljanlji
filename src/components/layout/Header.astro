@@ -1,0 +1,180 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro'
+import { t, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const currentPath = Astro.url.pathname
+
+function localePath(path: string) {
+  return `/${locale}${path}`
+}
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href={localePath('/')} class="logo">
+      <img
+        src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E"
+        alt="Ljanlji"
+        class="logo-img"
+        width="36"
+        height="36"
+      />
+      <span class="logo-name">Ljanlji</span>
+    </a>
+
+    <nav class="nav">
+      <a href={localePath('/')} class="nav-link">{t(locale, 'nav.home')}</a>
+      <a href={localePath('/products')} class="nav-link">{t(locale, 'nav.products')}</a>
+      <a href={localePath('/blog')} class="nav-link">{t(locale, 'nav.blog')}</a>
+      <a href={localePath('/about')} class="nav-link">{t(locale, 'nav.about')}</a>
+      <a href={localePath('/contact')} class="nav-link">{t(locale, 'nav.contact')}</a>
+    </nav>
+
+    <div class="header-right">
+      <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
+      <button class="menu-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav -->
+  <div class="mobile-nav" hidden>
+    <a href={localePath('/')} class="mobile-link">{t(locale, 'nav.home')}</a>
+    <a href={localePath('/products')} class="mobile-link">{t(locale, 'nav.products')}</a>
+    <a href={localePath('/blog')} class="mobile-link">{t(locale, 'nav.blog')}</a>
+    <a href={localePath('/about')} class="mobile-link">{t(locale, 'nav.about')}</a>
+    <a href={localePath('/contact')} class="mobile-link">{t(locale, 'nav.contact')}</a>
+    <div class="mobile-lang">
+      <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector('.menu-toggle') as HTMLButtonElement
+  const mobileNav = document.querySelector('.mobile-nav') as HTMLElement
+
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true'
+    toggle.setAttribute('aria-expanded', String(!expanded))
+    mobileNav.hidden = expanded
+  })
+</script>
+
+<style>
+  .site-header {
+    background: var(--linen);
+    border-bottom: 2px solid var(--sage-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 48px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .logo-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .logo-name {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--terracotta);
+    letter-spacing: 0.03em;
+  }
+
+  .nav {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover { color: var(--terracotta); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .menu-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--dark);
+    border-radius: 1px;
+  }
+
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    padding: 16px 20px 20px;
+    background: var(--paper);
+    border-top: 1px solid var(--sage-light);
+    gap: 4px;
+  }
+
+  .mobile-link {
+    font-family: var(--font-body);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--dark);
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(90,144,96,0.15);
+  }
+
+  .mobile-lang { margin-top: 12px; }
+
+  @media (max-width: 768px) {
+    .mobile-nav:not([hidden]) { display: flex; }
+
+    .header-inner { padding: 0 20px; }
+    .nav { display: none; }
+    .menu-toggle { display: flex; }
+  }
+</style>
