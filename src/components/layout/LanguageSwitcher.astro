@@ -1,56 +1,141 @@
 ---
-import { locales, localeNames, type Locale } from '@/i18n/ui'
+import { locales, type Locale } from '@/i18n/ui'
 
 interface Props {
   currentLocale: Locale
-  currentPath: string // e.g. /bs/products/my-product
+  currentPath: string
 }
 
 const { currentLocale, currentPath } = Astro.props
 
+const flags: Record<Locale, string> = {
+  bs: '🇧🇦',
+  sr: '🇷🇸',
+  de: '🇩🇪',
+  en: '🇺🇸',
+}
+
 function switchLocale(path: string, from: Locale, to: Locale): string {
-  // path starts with /from/... → replace with /to/...
   const withoutLocale = path.replace(new RegExp(`^/${from}`), '')
   return `/${to}${withoutLocale || '/'}`
 }
 ---
 
-<div class="lang-switcher">
-  {locales.map((locale) => (
-    <a
-      href={switchLocale(currentPath, currentLocale, locale)}
-      class={`lang-option ${locale === currentLocale ? 'active' : ''}`}
-      aria-current={locale === currentLocale ? 'true' : undefined}
-    >
-      {localeNames[locale]}
-    </a>
-  ))}
+<div class="lang-dropdown">
+  <button class="lang-trigger" aria-haspopup="true" aria-expanded="false">
+    <span class="lang-flag">{flags[currentLocale]}</span>
+    <span class="lang-code">{currentLocale.toUpperCase()}</span>
+    <svg class="lang-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+      <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="lang-menu" role="menu">
+    {locales.map((locale) => (
+      <a
+        href={switchLocale(currentPath, currentLocale, locale)}
+        class={`lang-item ${locale === currentLocale ? 'active' : ''}`}
+        role="menuitem"
+        aria-current={locale === currentLocale ? 'true' : undefined}
+      >
+        <span class="lang-flag">{flags[locale]}</span>
+        <span class="lang-code">{locale.toUpperCase()}</span>
+      </a>
+    ))}
+  </div>
 </div>
 
+<script>
+  document.querySelectorAll('.lang-dropdown').forEach((dropdown) => {
+    const trigger = dropdown.querySelector('.lang-trigger') as HTMLButtonElement
+    const menu = dropdown.querySelector('.lang-menu') as HTMLElement
+
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const open = trigger.getAttribute('aria-expanded') === 'true'
+      trigger.setAttribute('aria-expanded', String(!open))
+      menu.classList.toggle('open', !open)
+    })
+
+    document.addEventListener('click', () => {
+      trigger?.setAttribute('aria-expanded', 'false')
+      menu?.classList.remove('open')
+    })
+  })
+</script>
+
 <style>
-  .lang-switcher {
+  .lang-dropdown {
+    position: relative;
+  }
+
+  .lang-trigger {
     display: flex;
-    gap: 4px;
     align-items: center;
-  }
-
-  .lang-option {
-    font-family: var(--font-body);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    gap: 5px;
+    background: none;
+    border: 1px solid rgba(122,74,40,0.2);
+    border-radius: var(--radius-sm);
+    padding: 5px 8px;
+    cursor: pointer;
     color: var(--mid);
-    padding: 4px 8px;
-    border-radius: 2px;
-    transition: background 0.15s, color 0.15s;
+    font-family: var(--font-body);
+    transition: border-color 0.15s, color 0.15s;
   }
 
-  .lang-option:hover {
+  .lang-trigger:hover {
+    border-color: var(--terracotta);
     color: var(--terracotta);
   }
 
-  .lang-option.active {
+  .lang-flag { font-size: 0.875rem; line-height: 1; }
+
+  .lang-code {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .lang-chevron {
+    opacity: 0.6;
+    transition: transform 0.15s;
+  }
+
+  .lang-trigger[aria-expanded="true"] .lang-chevron {
+    transform: rotate(180deg);
+  }
+
+  .lang-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #fff;
+    border: 1px solid rgba(122,74,40,0.15);
+    border-radius: var(--radius-md);
+    box-shadow: 0 6px 24px rgba(58,32,16,0.12);
+    overflow: hidden;
+    min-width: 80px;
+    z-index: 100;
+  }
+
+  .lang-menu.open { display: block; }
+
+  .lang-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    color: var(--mid);
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .lang-item:hover { background: var(--paper); color: var(--dark); }
+
+  .lang-item.active {
     color: var(--terracotta);
     font-weight: 600;
+    background: var(--linen);
   }
 </style>

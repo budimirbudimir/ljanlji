@@ -100,7 +100,7 @@ export default function ContactForm({ strings, lang }: { strings: Strings; lang:
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label {
           font-family: var(--font-body);
-          font-size: 11px;
+          font-size: 0.6875rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
           color: var(--mid);
@@ -109,7 +109,7 @@ export default function ContactForm({ strings, lang }: { strings: Strings; lang:
         .form-group input,
         .form-group textarea {
           font-family: var(--font-body);
-          font-size: 14px;
+          font-size: 0.875rem;
           color: var(--dark);
           background: #fff;
           border: 1.5px solid rgba(90,144,96,0.35);
@@ -126,7 +126,7 @@ export default function ContactForm({ strings, lang }: { strings: Strings; lang:
         .form-group textarea:disabled { opacity: 0.6; cursor: not-allowed; }
         .form-feedback {
           font-family: var(--font-body);
-          font-size: 13px;
+          font-size: 0.8125rem;
           padding: 12px 16px;
           border-radius: 3px;
         }

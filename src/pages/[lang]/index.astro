@@ -16,9 +16,9 @@ const reader = createReader(process.cwd(), keystaticConfig)
 
 // Featured products
 const allProducts = await reader.collections.products.all()
-const featured = allProducts
-  .filter((p) => p.entry.status === 'published' && p.entry.featured)
-  .slice(0, 3)
+const published = allProducts.filter((p) => p.entry.status === 'published')
+const featured = published.filter((p) => p.entry.featured).slice(0, 3)
+const heroImage = featured[0]?.entry.images?.[0] ?? published[0]?.entry.images?.[0] ?? null
 
 // Home page singleton
 const homePage = await reader.singletons.homePage.read()
@@ -30,81 +30,21 @@ const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.c
 <Base locale={lang} title={heroTitle || 'Ljanlji'}>
   <!-- HERO -->
   <section class="hero">
+    {heroImage && (
+      <div class="hero-bg" aria-hidden="true">
+        <img class="hero-bg-sharp" src={heroImage} alt="" />
+        <div class="hero-bg-blur">
+          <img class="hero-bg-blur-img" src={heroImage} alt="" />
+        </div>
+      </div>
+    )}
+    <div class="hero-overlay" aria-hidden="true" />
     <div class="hero-inner">
       <div class="hero-text">
         <span class="eyebrow">{t(lang, 'hero.subtitle').split('—')[0]}</span>
         <h1 class="hero-title" set:html={heroTitle.replace(/([^.!?]+[.!?]?\s*)/g, '$1')} />
         <p class="hero-sub">{heroSubtitle}</p>
         <a href={`/${lang}/products`} class="btn-primary">{heroCta} →</a>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <!-- Naive-art folk flower basket SVG -->
-        <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="110" cy="158" rx="58" ry="18" fill="#8B5A2B" opacity="0.85"/>
-          <path d="M52 142 Q52 178 110 180 Q168 178 168 142 L160 128 Q144 118 110 118 Q76 118 60 128 Z" fill="#B07040"/>
-          <path d="M60 128 Q110 138 160 128" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
-          <path d="M54 142 Q110 155 166 142" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
-          <path d="M56 156 Q110 168 164 156" stroke="#8B5A2B" stroke-width="1.8" opacity="0.5"/>
-          <line x1="110" y1="118" x2="110" y2="78" stroke="#5A9060" stroke-width="2.5"/>
-          <line x1="110" y1="108" x2="80" y2="72" stroke="#5A9060" stroke-width="2"/>
-          <line x1="110" y1="108" x2="140" y2="72" stroke="#5A9060" stroke-width="2"/>
-          <line x1="110" y1="100" x2="62" y2="84" stroke="#5A9060" stroke-width="1.8"/>
-          <line x1="110" y1="100" x2="158" y2="84" stroke="#5A9060" stroke-width="1.8"/>
-          <line x1="110" y1="95" x2="92" y2="62" stroke="#5A9060" stroke-width="1.5"/>
-          <line x1="110" y1="95" x2="128" y2="62" stroke="#5A9060" stroke-width="1.5"/>
-          <ellipse cx="96" cy="84" rx="9" ry="4" fill="#5A9060" transform="rotate(-35 96 84)" opacity="0.9"/>
-          <ellipse cx="124" cy="84" rx="9" ry="4" fill="#5A9060" transform="rotate(35 124 84)" opacity="0.9"/>
-          <ellipse cx="72" cy="96" rx="8" ry="3" fill="#5A9060" transform="rotate(-50 72 96)" opacity="0.8"/>
-          <ellipse cx="148" cy="96" rx="8" ry="3" fill="#5A9060" transform="rotate(50 148 96)" opacity="0.8"/>
-          <circle cx="110" cy="70" r="10" fill="#C4622D"/>
-          <circle cx="110" cy="57" r="7" fill="#E8B84B"/>
-          <circle cx="121" cy="62" r="7" fill="#E8B84B"/>
-          <circle cx="121" cy="75" r="7" fill="#E8B84B"/>
-          <circle cx="110" cy="82" r="7" fill="#E8B84B"/>
-          <circle cx="99" cy="75" r="7" fill="#E8B84B"/>
-          <circle cx="99" cy="62" r="7" fill="#E8B84B"/>
-          <circle cx="110" cy="70" r="8" fill="#C4622D"/>
-          <circle cx="110" cy="70" r="4" fill="#E8B84B"/>
-          <circle cx="80" cy="62" r="8" fill="#C9706A"/>
-          <circle cx="80" cy="51" r="5" fill="#FAF3E8"/>
-          <circle cx="90" cy="56" r="5" fill="#FAF3E8"/>
-          <circle cx="90" cy="67" r="5" fill="#FAF3E8"/>
-          <circle cx="80" cy="72" r="5" fill="#FAF3E8"/>
-          <circle cx="70" cy="67" r="5" fill="#FAF3E8"/>
-          <circle cx="70" cy="56" r="5" fill="#FAF3E8"/>
-          <circle cx="80" cy="62" r="5.5" fill="#C9706A"/>
-          <circle cx="80" cy="62" r="2.5" fill="#FAF3E8"/>
-          <circle cx="140" cy="62" r="8" fill="#5A9060"/>
-          <circle cx="140" cy="51" r="5" fill="#E8B84B"/>
-          <circle cx="150" cy="56" r="5" fill="#E8B84B"/>
-          <circle cx="150" cy="67" r="5" fill="#E8B84B"/>
-          <circle cx="140" cy="72" r="5" fill="#E8B84B"/>
-          <circle cx="130" cy="67" r="5" fill="#E8B84B"/>
-          <circle cx="130" cy="56" r="5" fill="#E8B84B"/>
-          <circle cx="140" cy="62" r="5.5" fill="#5A9060"/>
-          <circle cx="140" cy="62" r="2.5" fill="#FAF3E8"/>
-          <circle cx="65" cy="80" r="6" fill="#E8B84B"/>
-          <circle cx="65" cy="73" r="3.5" fill="#FAF3E8"/>
-          <circle cx="71" cy="76" r="3.5" fill="#FAF3E8"/>
-          <circle cx="71" cy="84" r="3.5" fill="#FAF3E8"/>
-          <circle cx="65" cy="87" r="3.5" fill="#FAF3E8"/>
-          <circle cx="59" cy="84" r="3.5" fill="#FAF3E8"/>
-          <circle cx="59" cy="76" r="3.5" fill="#FAF3E8"/>
-          <circle cx="65" cy="80" r="3" fill="#E8B84B"/>
-          <circle cx="155" cy="80" r="6" fill="#C4622D"/>
-          <circle cx="155" cy="73" r="3.5" fill="#FAF3E8"/>
-          <circle cx="161" cy="76" r="3.5" fill="#FAF3E8"/>
-          <circle cx="161" cy="84" r="3.5" fill="#FAF3E8"/>
-          <circle cx="155" cy="87" r="3.5" fill="#FAF3E8"/>
-          <circle cx="149" cy="84" r="3.5" fill="#FAF3E8"/>
-          <circle cx="149" cy="76" r="3.5" fill="#FAF3E8"/>
-          <circle cx="155" cy="80" r="3" fill="#C4622D"/>
-          <circle cx="92" cy="50" r="2.5" fill="#E8B84B"/>
-          <circle cx="128" cy="50" r="2.5" fill="#C9706A"/>
-          <circle cx="110" cy="44" r="3" fill="#5A9060"/>
-          <circle cx="76" cy="46" r="2" fill="#C4622D"/>
-          <circle cx="144" cy="46" r="2" fill="#C4622D"/>
-        </svg>
       </div>
     </div>
   </section>
@@ -186,65 +126,112 @@ const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.c
 
 <style>
   /* HERO */
-  .hero {
-    background: var(--paper);
-    position: relative;
-    overflow: hidden;
+  @property --lx {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 66%;
+  }
+  @property --ly {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 50%;
   }
 
-  .hero::after {
-    content: '';
+  .hero {
+    position: relative;
+    min-height: 62vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  .hero-bg {
     position: absolute;
-    right: -80px;
-    top: -80px;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(232,184,75,0.18) 0%, transparent 65%);
+    inset: 0;
+  }
+
+  .hero-bg-sharp {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-bg-blur {
+    position: absolute;
+    inset: -4%;
+    width: 108%;
+    height: 108%;
+    filter: blur(8px);
+    mask-image: radial-gradient(ellipse 46% 64% at var(--lx) var(--ly), transparent 32%, rgba(0,0,0,0.88) 60%, black 74%);
+    -webkit-mask-image: radial-gradient(ellipse 46% 64% at var(--lx) var(--ly), transparent 32%, rgba(0,0,0,0.88) 60%, black 74%);
+    animation: lensFloat 16s ease-in-out infinite;
+  }
+
+  .hero-bg-blur-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, rgba(18,10,4,0.58) 0%, rgba(18,10,4,0.28) 55%, transparent 100%);
     pointer-events: none;
   }
 
   .hero-inner {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 72px 48px 64px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: center;
+    padding: 88px 48px 80px;
     position: relative;
     z-index: 1;
+    width: 100%;
   }
+
+  .hero-text { max-width: 480px; }
 
   .hero-title {
-    font-size: clamp(32px, 5vw, 52px);
-    color: var(--dark);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    color: #fff;
     margin: 12px 0 18px;
     line-height: 1.15;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.3);
   }
 
-  .hero-title em { color: var(--terracotta); }
+  .hero-title em { color: var(--mustard); }
 
   .hero-sub {
-    font-size: 14px;
-    color: var(--mid);
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.82);
     line-height: 1.75;
     margin-bottom: 30px;
     max-width: 380px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
   }
 
-  .hero-art svg {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    display: block;
+  .hero .eyebrow {
+    color: var(--mustard);
+    opacity: 0.9;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  }
+
+  @keyframes lensFloat {
+    0%, 100% { --lx: 42%; --ly: 52%; }
+    20%       { --lx: 50%; --ly: 38%; }
+    40%       { --lx: 36%; --ly: 62%; }
+    60%       { --lx: 52%; --ly: 56%; }
+    80%       { --lx: 34%; --ly: 40%; }
   }
 
   /* FEATURED */
   .featured-section { padding-top: 56px; padding-bottom: 56px; }
 
   .section-title {
-    font-size: clamp(22px, 3vw, 30px);
+    font-size: clamp(1.375rem, 3vw, 1.875rem);
     color: var(--dark);
     margin-bottom: 32px;
   }
@@ -298,7 +285,7 @@ const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.c
 
   .product-link {
     font-family: var(--font-body);
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.1em;
     color: var(--terracotta);
     font-weight: 600;
@@ -312,7 +299,7 @@ const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.c
   }
 
   .about-teaser-body {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #fff;
     opacity: 0.88;
     line-height: 1.82;
@@ -336,15 +323,15 @@ const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.c
 
   .contact-cta-text {
     font-family: var(--font-heading);
-    font-size: 22px;
+    font-size: 1.375rem;
     color: var(--dark);
   }
 
   .contact-cta-text span { color: var(--terracotta); font-style: italic; }
 
   @media (max-width: 768px) {
-    .hero-inner { grid-template-columns: 1fr; padding: 48px 20px; }
-    .hero-art { display: none; }
+    .hero-inner { padding: 64px 20px 56px; }
+    .hero-bg-blur { animation: none; mask-image: none; -webkit-mask-image: none; filter: blur(16px); }
     .product-grid { grid-template-columns: 1fr; }
     .contact-cta-inner { flex-direction: column; align-items: flex-start; }
   }

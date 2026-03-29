@@ -76,7 +76,7 @@ export default function ProductFilter({ products, categories, filterAllLabel, em
         }
         .filter-btn {
           font-family: var(--font-body);
-          font-size: 10px;
+          font-size: 0.625rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           padding: 8px 18px;
@@ -96,7 +96,7 @@ export default function ProductFilter({ products, categories, filterAllLabel, em
         }
         .empty-msg {
           font-family: var(--font-body);
-          font-size: 14px;
+          font-size: 0.875rem;
           color: var(--mid);
           padding: 40px 0;
           text-align: center;
@@ -137,14 +137,14 @@ export default function ProductFilter({ products, categories, filterAllLabel, em
         .product-info { padding: 14px 16px 18px; }
         .product-name {
           font-family: var(--font-heading);
-          font-size: 16px;
+          font-size: 1rem;
           color: var(--dark);
           margin: 8px 0 10px;
           font-weight: 400;
         }
         .product-link {
           font-family: var(--font-body);
-          font-size: 11px;
+          font-size: 0.6875rem;
           letter-spacing: 0.1em;
           color: var(--terracotta);
           font-weight: 600;

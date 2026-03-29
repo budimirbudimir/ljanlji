@@ -80,7 +80,7 @@ export default function ProductGallery({ images, photosLabel }: Props) {
           background: rgba(58,32,16,0.72);
           color: #fff;
           font-family: var(--font-body);
-          font-size: 10px;
+          font-size: 0.625rem;
           letter-spacing: 0.1em;
           padding: 5px 12px;
           border-radius: 2px;

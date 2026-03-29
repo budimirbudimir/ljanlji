@@ -1,60 +1,15 @@
 slug: dobrodosli-na-ljanlji
 status: published
-publishedDate: '2025-03-01'
-coverImage: https://images.unsplash.com/photo-1490750967868-88df5691cc06?w=1200&q=80
+publishedDate: 2026-03-29
+coverImage: /images/blog/dobrodosli-na-ljanlji/coverImage.jpg
 title:
   bs: Dobrodošli na Ljanlji!
   sr: Добродошли на Ljanlji!
   de: Willkommen bei Ljanlji!
   en: Welcome to Ljanlji!
 excerpt:
-  bs: Prva objava na našem blogu — par riječi o tome ko smo, šta radimo i zašto.
-  sr: Прва објава на нашем блогу — пар ријечи о томе ко смо, шта радимо и зашто.
-  de: Unser erster Blogbeitrag — ein paar Worte darüber, wer wir sind, was wir tun und warum.
-  en: Our first blog post — a few words about who we are, what we do, and why.
-body:
-  bs:
-    - type: paragraph
-      children:
-        - text: Dragi posjetioci, dobrodošli na Ljanlji.com!
-    - type: paragraph
-      children:
-        - text: Ovo je moj mali kutak interneta gdje ću dijeliti radove koje pravim rukama, s ljubavlju, koristeći materijale koje priroda daje.
-    - type: heading
-      level: 2
-      children:
-        - text: Ko smo mi?
-    - type: paragraph
-      children:
-        - text: Ljanlji je mali obrt koji se bavi ručnom izradom ukrasnih predmeta inspirisanih balkanskim seoskim životom. Sušeno cvijeće, uskršnje korpe, božićni ukrasi i sezonski aranžmani — sve nastaje polako, s pažnjom.
-    - type: heading
-      level: 2
-      children:
-        - text: Šta možete pronaći ovdje?
-    - type: paragraph
-      children:
-        - text: Na stranici Proizvodi naći ćete sve što trenutno nudim. Svaki komad je jedinstven — radim po narudžbini, pa slobodno pišite ako imate posebnu želju.
-    - type: paragraph
-      children:
-        - text: Hvala što ste svratili. ❤
-  sr:
-    - type: paragraph
-      children:
-        - text: Драги посјетиоци, добродошли на Ljanlji.com!
-    - type: paragraph
-      children:
-        - text: Ово је мој мали кутак интернета гдје ћу дијелити радове које правим рукама, с љубављу, користећи материјале које природа даје.
-  de:
-    - type: paragraph
-      children:
-        - text: Liebe Besucher, willkommen bei Ljanlji.com!
-    - type: paragraph
-      children:
-        - text: Dies ist meine kleine Ecke im Internet, wo ich Werke teile, die ich mit den Händen und mit Liebe mache, unter Verwendung von Materialien, die die Natur gibt.
-  en:
-    - type: paragraph
-      children:
-        - text: Dear visitors, welcome to Ljanlji.com!
-    - type: paragraph
-      children:
-        - text: This is my little corner of the internet where I will share works that I make by hand, with love, using materials that nature provides.
+  bs: Ko smo mi - priča o rukama, zemlji i lijepom životu
+  sr: Ко смо ми - прича о рукама, земљи и лепом животу
+  de: Wer wir sind - eine Geschichte über Hände, Erde und ein schönes Leben
+  en: Who we are - a story about hands, land, and a beautiful life
+body: {}

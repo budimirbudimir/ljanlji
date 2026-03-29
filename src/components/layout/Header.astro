@@ -18,7 +18,7 @@ function localePath(path: string) {
   <div class="header-inner">
     <a href={localePath('/')} class="logo">
       <img
-        src="https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/605239798_918669620483200_3586017787334295206_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=2a1932&_nc_ohc=74AUwRh-7YsQ7kNvwGdMyK3&_nc_oc=AdpZcpr-M6WvtEjoy9iNm18qZNBFWc0-JtKp1H0B3AQJ9Ry2z8BOSNs6Ckj5jrSo3QwwqHvwsPhdfcePpm6RTg_m&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=BPECu602MTkOztHJ9J6wxw&_nc_ss=7a30f&oh=00_AfyP1MGZOzEbeLgeGT2F6xBrFH9kJbSd9MBSWBWIzpv9xg&oe=69C6258E"
+        src="/images/logo.jpg"
         alt="Ljanlji"
         class="logo-img"
         width="36"
@@ -37,6 +37,12 @@ function localePath(path: string) {
 
     <div class="header-right">
       <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
+      <a href="/keystatic" class="admin-link" aria-label="Admin panel" title="Admin panel">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </a>
       <button class="menu-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -103,7 +109,7 @@ function localePath(path: string) {
 
   .logo-name {
     font-family: var(--font-heading);
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 700;
     color: var(--terracotta);
     letter-spacing: 0.03em;
@@ -117,7 +123,7 @@ function localePath(path: string) {
 
   .nav-link {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--mid);
@@ -131,6 +137,17 @@ function localePath(path: string) {
     align-items: center;
     gap: 12px;
   }
+
+  .admin-link {
+    display: flex;
+    align-items: center;
+    color: var(--mid);
+    opacity: 0.45;
+    transition: opacity 0.15s, color 0.15s;
+    padding: 4px;
+  }
+
+  .admin-link:hover { opacity: 1; color: var(--terracotta); }
 
   .menu-toggle {
     display: none;

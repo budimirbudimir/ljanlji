@@ -45,5 +45,59 @@ const langMap: Record<Locale, string> = {
       <slot />
     </main>
     <Footer locale={locale} />
+
+    <div class="font-size-widget" aria-label="Veličina teksta">
+      <button class="fs-btn" id="fs-down" aria-label="Manji tekst" title="Manji tekst">A−</button>
+      <button class="fs-btn" id="fs-up" aria-label="Veći tekst" title="Veći tekst">A+</button>
+    </div>
+
+    <script>
+      const steps = ['', 'lg', 'xl']
+      const html = document.documentElement
+      let current = steps.indexOf(localStorage.getItem('text-size') || '')
+      if (current < 0) current = 0
+      if (steps[current]) html.setAttribute('data-text', steps[current])
+
+      document.getElementById('fs-up')?.addEventListener('click', () => {
+        if (current < steps.length - 1) current++
+        const val = steps[current]
+        val ? html.setAttribute('data-text', val) : html.removeAttribute('data-text')
+        localStorage.setItem('text-size', val)
+      })
+      document.getElementById('fs-down')?.addEventListener('click', () => {
+        if (current > 0) current--
+        const val = steps[current]
+        val ? html.setAttribute('data-text', val) : html.removeAttribute('data-text')
+        localStorage.setItem('text-size', val)
+      })
+    </script>
   </body>
 </html>
+
+<style>
+  .font-size-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    gap: 4px;
+    z-index: 200;
+  }
+
+  .fs-btn {
+    background: var(--dark);
+    color: var(--mustard);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 11px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.72;
+    transition: opacity 0.15s;
+    line-height: 1;
+  }
+
+  .fs-btn:hover { opacity: 1; }
+</style>
