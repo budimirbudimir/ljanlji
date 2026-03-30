@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * Auto-translate Keystatic content from Bosnian to sr/de/en.
- * Called by the GitHub Action on every push that touches src/content/.
- * Uses GitHub Models API (gpt-4o-mini) with the built-in GITHUB_TOKEN.
+ * Collects all texts needing translation, sends ONE batched request,
+ * then distributes results back to YAML and mdoc files.
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs'
@@ -17,15 +17,24 @@ if (!GITHUB_TOKEN) {
 }
 
 const TARGETS = {
-  sr: 'Serbian written in Cyrillic script (not Latin)',
+  sr: 'Serbian in Cyrillic script (not Latin)',
   de: 'German',
   en: 'English',
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-async function translate(text, targetLang) {
-  await sleep(300) // stay well within rate limits
+/**
+ * Send all texts in one request, get back all languages at once.
+ * Input:  [{ id: '0', text: '...' }, ...]
+ * Output: { sr: { '0': '...', ... }, de: { ... }, en: { ... } }
+ */
+async function translateBatch(texts, attempt = 0) {
+  const numbered = Object.fromEntries(texts.map(({ id, text }) => [id, text]))
+  const langList = Object.keys(TARGETS).join(', ')
+  const langDescriptions = Object.entries(TARGETS)
+    .map(([code, name]) => `"${code}" → ${name}`)
+    .join('; ')
 
   const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
     method: 'POST',
@@ -35,96 +44,133 @@ async function translate(text, targetLang) {
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
+      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
           content:
-            `You are a professional translator. Translate the following text from Bosnian to ${TARGETS[targetLang]}. ` +
-            `Return only the translated text — no explanations, no quotes around the result. ` +
-            `Preserve any markdown formatting (bold, italic, bullet lists, line breaks) exactly as-is.`,
+            `You are a professional translator. You will receive a JSON object where keys are numeric IDs and values are Bosnian texts. ` +
+            `Translate each text into these languages: ${langDescriptions}. ` +
+            `Return a JSON object with language codes as top-level keys (${langList}), ` +
+            `each containing an object mapping the same numeric IDs to their translated text. ` +
+            `Preserve markdown formatting (bold, italic, bullet lists, line breaks) exactly as-is.`,
         },
-        { role: 'user', content: text },
+        { role: 'user', content: JSON.stringify(numbered) },
       ],
       temperature: 0.2,
     }),
   })
+
+  if (res.status === 429 && attempt < 3) {
+    const body = await res.json()
+    const waitMatch = body?.error?.message?.match(/wait (\d+) seconds/)
+    const waitSec = waitMatch ? parseInt(waitMatch[1]) + 2 : 60
+    console.log(`Rate limited — waiting ${waitSec}s...`)
+    await sleep(waitSec * 1000)
+    return translateBatch(texts, attempt + 1)
+  }
 
   if (!res.ok) {
     throw new Error(`GitHub Models API error ${res.status}: ${await res.text()}`)
   }
 
   const data = await res.json()
-  return data.choices[0].message.content.trim()
-}
-
-/** Translate empty lang fields in a product/blog YAML file. */
-async function processYaml(filePath) {
-  const raw = readFileSync(filePath, 'utf8')
-  const doc = yaml.load(raw)
-  let changed = false
-
-  for (const field of ['title', 'excerpt']) {
-    if (!doc[field] || typeof doc[field] !== 'object') continue
-    const source = doc[field].bs
-    if (!source?.trim()) continue
-
-    for (const lang of Object.keys(TARGETS)) {
-      if (!doc[field][lang]?.trim()) {
-        console.log(`  translating [${lang}] ${field}`)
-        doc[field][lang] = await translate(source, lang)
-        changed = true
-      }
-    }
-  }
-
-  if (changed) {
-    writeFileSync(filePath, yaml.dump(doc, { lineWidth: -1, forceQuotes: false }))
-  }
-  return changed
-}
-
-/** Translate an empty target mdoc from the Bosnian source mdoc. */
-async function processMdoc(bsPath, lang, targetPath) {
-  if (!existsSync(bsPath)) return false
-  const source = readFileSync(bsPath, 'utf8').trim()
-  if (!source) return false
-
-  const existing = existsSync(targetPath) ? readFileSync(targetPath, 'utf8').trim() : ''
-  if (existing) return false
-
-  console.log(`  translating [${lang}] ${targetPath}`)
-  const translated = await translate(source, lang)
-  await mkdir(dirname(targetPath), { recursive: true })
-  writeFileSync(targetPath, translated + '\n')
-  return true
+  return JSON.parse(data.choices[0].message.content)
 }
 
 async function run() {
-  let totalChanged = 0
-
   const collections = [
     { dir: 'src/content/products', mdocSubdir: 'description' },
     { dir: 'src/content/blog', mdocSubdir: 'body' },
   ]
 
+  // Each job: one unique source text that needs translating.
+  // applyByLang maps lang → callback that writes the result somewhere.
+  const jobs = [] // { id, text, applyByLang: { sr: fn, de: fn, en: fn } }
+  const dirtyYamls = new Map() // filePath → { doc }
+
   for (const { dir, mdocSubdir } of collections) {
     const files = (await readdir(dir)).filter((f) => f.endsWith('.yaml'))
 
     for (const file of files) {
+      const filePath = join(dir, file)
       const slug = file.replace('.yaml', '')
-      console.log(`\n${slug}`)
+      const doc = yaml.load(readFileSync(filePath, 'utf8'))
 
-      if (await processYaml(join(dir, file))) totalChanged++
+      // YAML text fields — one job per (field, source text) with callbacks per lang
+      for (const field of ['title', 'excerpt']) {
+        if (!doc[field] || typeof doc[field] !== 'object') continue
+        const source = doc[field].bs
+        if (!source?.trim()) continue
 
+        const missingLangs = Object.keys(TARGETS).filter((l) => !doc[field][l]?.trim())
+        if (missingLangs.length === 0) continue
+
+        const id = String(jobs.length)
+        const applyByLang = {}
+        for (const lang of missingLangs) {
+          applyByLang[lang] = (translated) => {
+            doc[field][lang] = translated
+            dirtyYamls.set(filePath, { doc })
+          }
+        }
+        jobs.push({ id, text: source, applyByLang })
+      }
+
+      // mdoc files — one job per source text, callbacks write target files
       const bsPath = join(dir, slug, mdocSubdir, 'bs.mdoc')
-      for (const lang of Object.keys(TARGETS)) {
+      if (!existsSync(bsPath)) continue
+      const bsContent = readFileSync(bsPath, 'utf8').trim()
+      if (!bsContent) continue
+
+      const missingLangs = Object.keys(TARGETS).filter((lang) => {
         const targetPath = join(dir, slug, mdocSubdir, `${lang}.mdoc`)
-        if (await processMdoc(bsPath, lang, targetPath)) totalChanged++
+        return !existsSync(targetPath) || !readFileSync(targetPath, 'utf8').trim()
+      })
+      if (missingLangs.length === 0) continue
+
+      const id = String(jobs.length)
+      const applyByLang = {}
+      for (const lang of missingLangs) {
+        const targetPath = join(dir, slug, mdocSubdir, `${lang}.mdoc`)
+        applyByLang[lang] = async (translated) => {
+          await mkdir(dirname(targetPath), { recursive: true })
+          writeFileSync(targetPath, translated + '\n')
+          console.log(`  wrote ${targetPath}`)
+        }
+      }
+      jobs.push({ id, text: bsContent, applyByLang })
+    }
+  }
+
+  if (jobs.length === 0) {
+    console.log('Nothing to translate.')
+    return
+  }
+
+  console.log(`Sending ${jobs.length} text(s) for translation...`)
+
+  const translations = await translateBatch(jobs.map(({ id, text }) => ({ id, text })))
+
+  // Apply results
+  for (const job of jobs) {
+    for (const [lang, apply] of Object.entries(job.applyByLang)) {
+      const translated = translations?.[lang]?.[job.id]
+      if (translated) {
+        await apply(translated)
+      } else {
+        console.warn(`  Missing translation id=${job.id} lang=${lang}`)
       }
     }
   }
 
-  console.log(`\nDone — ${totalChanged} file(s) updated.`)
+  // Save dirty YAML files
+  for (const [filePath, { doc }] of dirtyYamls) {
+    writeFileSync(filePath, yaml.dump(doc, { lineWidth: -1, forceQuotes: false }))
+    console.log(`  wrote ${filePath}`)
+  }
+
+  console.log('\nDone.')
 }
 
 run().catch((err) => {
