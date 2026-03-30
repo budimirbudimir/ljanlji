@@ -49,16 +49,15 @@ const translatedDocument = (label: string) =>
   )
 
 export default config({
-  storage:
-    process.env.KEYSTATIC_GITHUB_CLIENT_ID
-      ? {
-          kind: 'github',
-          repo: {
-            owner: 'budimirbudimir',
-            name: 'ljanlji',
-          },
-        }
-      : { kind: 'local' },
+  storage: import.meta.env.DEV
+    ? { kind: 'local' }
+    : {
+        kind: 'github',
+        repo: {
+          owner: 'budimirbudimir',
+          name: 'ljanlji',
+        },
+      },
 
   ui: {
     brand: { name: 'Ljanlji', mark: BackToSite },
