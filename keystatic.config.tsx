@@ -84,6 +84,8 @@ export default config({
           ],
           defaultValue: 'published',
         }),
+        order: fields.integer({ label: 'Redoslijed', defaultValue: 0, description: 'Manji broj = prikazuje se ranije' }),
+        createdAt: fields.date({ label: 'Datum kreiranja' }),
         featured: fields.checkbox({ label: 'Istaknuto na naslovnici?', defaultValue: false }),
         category: fields.select({
           label: 'Kategorija',

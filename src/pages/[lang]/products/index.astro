@@ -15,7 +15,9 @@ const { lang } = Astro.params as { lang: Locale }
 
 const reader = createReader(process.cwd(), keystaticConfig)
 const allProducts = await reader.collections.products.all()
-const published = allProducts.filter((p) => p.entry.status === 'published')
+const published = allProducts
+  .filter((p) => p.entry.status === 'published')
+  .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0))
 
 const products = published.map((p) => ({
   slug: p.slug,

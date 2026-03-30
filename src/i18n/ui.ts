@@ -247,6 +247,28 @@ export function t(locale: Locale, key: UiKey): string {
   return (ui[locale] as Record<string, string>)[key] ?? (ui.bs as Record<string, string>)[key] ?? key
 }
 
+const pluralStrings: Record<Locale, Record<string, Partial<Record<Intl.LDMLPluralRule, string>> & { other: string }>> = {
+  bs: {
+    photos: { one: 'fotografija', few: 'fotografije', other: 'fotografija' },
+  },
+  sr: {
+    photos: { one: 'fotografija', few: 'fotografije', other: 'fotografija' },
+  },
+  de: {
+    photos: { one: 'Foto', other: 'Fotos' },
+  },
+  en: {
+    photos: { one: 'photo', other: 'photos' },
+  },
+}
+
+export function plural(locale: Locale, key: string, count: number): string {
+  const forms = pluralStrings[locale]?.[key]
+  if (!forms) return key
+  const category = new Intl.PluralRules(locale).select(count)
+  return forms[category] ?? forms.other
+}
+
 export function getLocaleFromUrl(url: URL): Locale {
   const [, lang] = url.pathname.split('/')
   if (locales.includes(lang as Locale)) return lang as Locale

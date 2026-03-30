@@ -2,7 +2,7 @@
 export const prerender = true
 import Base from '@/layouts/Base.astro'
 import ProductGallery from '@/components/ui/ProductGallery'
-import { t, locales, type Locale } from '@/i18n/ui'
+import { t, locales, plural, type Locale } from '@/i18n/ui'
 import { pick } from '@/lib/content'
 import { createReader } from '@keystatic/core/reader'
 import { DocumentRenderer } from '@keystatic/core/renderer'
@@ -40,6 +40,7 @@ const images = [...fileImages, ...urlImages].map((src, i) => ({
   alt: `${title} — ${i + 1}`,
 }))
 const categoryLabel = t(lang, `cat.${product.category}` as any)
+const photosLabel = plural(lang, 'photos', images.length)
 ---
 
 <Base locale={lang} title={String(title)} ogImage={images[0]?.src ?? undefined}>
@@ -58,7 +59,7 @@ const categoryLabel = t(lang, `cat.${product.category}` as any)
       <ProductGallery
         client:load
         images={images}
-        photosLabel={t(lang, 'products.photos')}
+        photosLabel={photosLabel}
       />
     </div>
 

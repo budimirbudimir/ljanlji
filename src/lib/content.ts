@@ -10,6 +10,8 @@ import type { Locale } from '@/i18n/ui'
 export type ProductData = {
   slug: string
   status: 'published' | 'draft'
+  order: number | null
+  createdAt: string | null
   featured: boolean
   category: string
   images: string[]

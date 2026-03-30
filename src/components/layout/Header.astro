@@ -37,13 +37,7 @@ function localePath(path: string) {
 
     <div class="header-right">
       <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
-      <a href="/keystatic" class="admin-link" aria-label="Admin panel" title="Admin panel">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-      </a>
-      <button class="menu-toggle" aria-label="Menu" aria-expanded="false">
+<button class="menu-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -138,18 +132,7 @@ function localePath(path: string) {
     gap: 12px;
   }
 
-  .admin-link {
-    display: flex;
-    align-items: center;
-    color: var(--mid);
-    opacity: 0.45;
-    transition: opacity 0.15s, color 0.15s;
-    padding: 4px;
-  }
-
-  .admin-link:hover { opacity: 1; color: var(--terracotta); }
-
-  .menu-toggle {
+.menu-toggle {
     display: none;
     flex-direction: column;
     gap: 5px;
