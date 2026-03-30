@@ -50,7 +50,7 @@ const translatedDocument = (label: string) =>
 
 export default config({
   storage:
-    import.meta.env.PROD
+    process.env.NODE_ENV === 'production'
       ? {
           kind: 'github',
           repo: {
