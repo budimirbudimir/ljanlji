@@ -65,6 +65,7 @@ export default config({
     navigation: {
       Sadržaj: ['products', 'blogPosts'],
       Stranice: ['homePage', 'aboutPage'],
+      Postavke: ['productOrder'],
     },
   },
 
@@ -84,7 +85,6 @@ export default config({
           ],
           defaultValue: 'published',
         }),
-        order: fields.integer({ label: 'Redoslijed', defaultValue: 0, description: 'Manji broj = prikazuje se ranije' }),
         createdAt: fields.date({ label: 'Datum kreiranja' }),
         featured: fields.checkbox({ label: 'Istaknuto na naslovnici?', defaultValue: false }),
         category: fields.select({
@@ -149,9 +149,31 @@ export default config({
       path: 'src/content/pages/home',
       format: { data: 'yaml' },
       schema: {
+        heroImage: fields.image({
+          label: 'Hero slika',
+          directory: 'public/images',
+          publicPath: '/images/',
+          description: 'Slika koja se prikazuje u pozadini naslovnice.',
+        }),
         heroTitle: translatedText('Naslov heroja'),
         heroSubtitle: translatedText('Podnaslov heroja'),
         heroCta: translatedText('Dugme heroja'),
+      },
+    }),
+
+    productOrder: singleton({
+      label: 'Redoslijed proizvoda',
+      path: 'src/content/pages/product-order',
+      format: { data: 'yaml' },
+      schema: {
+        order: fields.array(
+          fields.relationship({ label: 'Proizvod', collection: 'products' }),
+          {
+            label: 'Redoslijed proizvoda',
+            description: 'Prevucite proizvode da promijenite redoslijed prikazivanja.',
+            itemLabel: (props) => props.value ?? 'Proizvod',
+          }
+        ),
       },
     }),
 

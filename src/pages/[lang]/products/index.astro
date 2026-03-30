@@ -15,9 +15,12 @@ const { lang } = Astro.params as { lang: Locale }
 
 const reader = createReader(process.cwd(), keystaticConfig)
 const allProducts = await reader.collections.products.all()
+const orderData = await reader.singletons.productOrder.read()
+const orderIndex = new Map((orderData?.order ?? []).map((slug, i) => [slug, i]))
+
 const published = allProducts
   .filter((p) => p.entry.status === 'published')
-  .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0))
+  .sort((a, b) => (orderIndex.get(a.slug) ?? 999) - (orderIndex.get(b.slug) ?? 999))
 
 const products = published.map((p) => ({
   slug: p.slug,

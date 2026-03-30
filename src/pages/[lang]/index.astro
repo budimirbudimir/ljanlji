@@ -16,14 +16,17 @@ const reader = createReader(process.cwd(), keystaticConfig)
 
 // Featured products
 const allProducts = await reader.collections.products.all()
+const orderData = await reader.singletons.productOrder.read()
+const orderIndex = new Map((orderData?.order ?? []).map((slug, i) => [slug, i]))
+
 const published = allProducts
   .filter((p) => p.entry.status === 'published')
-  .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0))
+  .sort((a, b) => (orderIndex.get(a.slug) ?? 999) - (orderIndex.get(b.slug) ?? 999))
 const featured = published.filter((p) => p.entry.featured).slice(0, 3)
-const heroImage = featured[0]?.entry.images?.[0] ?? published[0]?.entry.images?.[0] ?? null
 
 // Home page singleton
 const homePage = await reader.singletons.homePage.read()
+const heroImage = homePage?.heroImage ?? featured[0]?.entry.images?.[0] ?? published[0]?.entry.images?.[0] ?? null
 const heroTitle = homePage ? pick(homePage.heroTitle as any, lang) : t(lang, 'hero.title')
 const heroSubtitle = homePage ? pick(homePage.heroSubtitle as any, lang) : t(lang, 'hero.subtitle')
 const heroCta = homePage ? pick(homePage.heroCta as any, lang) : t(lang, 'hero.cta')
