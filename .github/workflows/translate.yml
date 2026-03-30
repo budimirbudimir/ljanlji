@@ -34,6 +34,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/
           git diff --staged --quiet && echo "Nothing to commit" || {
-            git commit -m "auto: translate new content [skip ci]"
+            git commit -m "auto: translate new content"
             git push
           }
